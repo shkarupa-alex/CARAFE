@@ -18,7 +18,7 @@ using namespace at;
   for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; \
        i += blockDim.x * gridDim.x)
 
-#define THREADS_PER_BLOCK 1024  // 32 * 32
+#define THREADS_PER_BLOCK 1 // 1024  // 32 * 32
 #define WARP_SIZE 32
 #define THREADS_PER_PIXEL 32
 #define MAX_SHARED_MEMORY 49152
