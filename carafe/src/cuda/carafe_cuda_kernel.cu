@@ -137,14 +137,16 @@ __global__ void CARAFEForward(
   __syncthreads();
 
   const int channels_per_group = ceilf(channels / (float)group_size);
+#pragma unroll
   for (int c = split_id; c < channels; c += THREADS_PER_PIXEL) {
     int mask_group = c / channels_per_group;
     scalar_t output_val = 0;
+#pragma unroll
     for (int iy = start_h; iy < end_h; iy++) {
+#pragma unroll
       for (int ix = start_w; ix < end_w; ix++) {
         if (iy < 0 || iy > down_height - 1 || ix < 0 || ix > down_width - 1) {
           continue;
-          printf("%d %d %d %d - -\n", n, ph, pw, c);
         }
         int mask_iy = iy - down_ph + (kernel_size - 1) / 2;
         int mask_ix = ix - down_pw + (kernel_size - 1) / 2;
@@ -199,7 +201,8 @@ int CARAFEForwardLaucher(const at::Tensor features, const at::Tensor masks,
       }));
   AT_DISPATCH_FLOATING_TYPES_AND_HALF(
       features.scalar_type(), "CARAFELaucherForward", ([&] {
-        const int num_kernels = 1; //batch_size * output_height * output_width * THREADS_PER_PIXEL;
+        const int num_kernels =
+            batch_size * output_height * output_width * THREADS_PER_PIXEL;
         const scalar_t *bottom_data = rfeatures.data_ptr<scalar_t>();
         const scalar_t *bottom_masks = rmasks.data_ptr<scalar_t>();
         scalar_t *top_data = routput.data_ptr<scalar_t>();
