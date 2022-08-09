@@ -155,14 +155,14 @@ __global__ void CARAFEForward(
         int feat_index =
             Loc2Index(n, iy, ix, c, down_height, down_width, channels);
 
-        printf("%d %d %d %d %f %f\n", n, ph, pw, c, bottom_data[feat_index], shared_mask[mask_c * WARP_SIZE + pixel_id]);
+        printf("%d %d %d %d %d %d %f %f\n", n, ph, pw, c, mask_iy, mask_ix, bottom_data[feat_index], shared_mask[mask_c * WARP_SIZE + pixel_id]);
         output_val += bottom_data[feat_index] *
                       shared_mask[mask_c * WARP_SIZE + pixel_id];
       }
     }
 
     int top_index = Loc2Index(n, ph, pw, c, height, width, channels);
-    printf("%d %d %d %d _ %f\n", n, ph, pw, c, output_val);
+    printf("%d %d %d %d _ _ _ %f\n", n, ph, pw, c, output_val);
     top_data[top_index] = output_val;
   }
 }
