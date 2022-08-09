@@ -155,7 +155,7 @@ __global__ void CARAFEForward(
         int feat_index =
             Loc2Index(n, iy, ix, c, down_height, down_width, channels);
 
-        printf("%d %d %d %d %d %d %f %f\n", n, ph, pw, c, mask_iy, mask_ix, bottom_data[feat_index], shared_mask[mask_c * WARP_SIZE + pixel_id]);
+        printf("%d %d %d %d %f %f\n", n, ph, pw, c, bottom_data[feat_index], shared_mask[mask_c * WARP_SIZE + pixel_id]);
         output_val += bottom_data[feat_index] *
                       shared_mask[mask_c * WARP_SIZE + pixel_id];
       }
