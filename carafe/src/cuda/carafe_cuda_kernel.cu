@@ -18,7 +18,7 @@ using namespace at;
   for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; \
        i += blockDim.x * gridDim.x)
 
-#define THREADS_PER_BLOCK 1 // 1024  // 32 * 32
+#define THREADS_PER_BLOCK 1024  // 32 * 32
 #define WARP_SIZE 32
 #define THREADS_PER_PIXEL 32
 #define MAX_SHARED_MEMORY 49152
@@ -199,8 +199,7 @@ int CARAFEForwardLaucher(const at::Tensor features, const at::Tensor masks,
       }));
   AT_DISPATCH_FLOATING_TYPES_AND_HALF(
       features.scalar_type(), "CARAFELaucherForward", ([&] {
-        const int num_kernels =
-            batch_size * output_height * output_width * THREADS_PER_PIXEL;
+        const int num_kernels = 1; //batch_size * output_height * output_width * THREADS_PER_PIXEL;
         const scalar_t *bottom_data = rfeatures.data_ptr<scalar_t>();
         const scalar_t *bottom_masks = rmasks.data_ptr<scalar_t>();
         scalar_t *top_data = routput.data_ptr<scalar_t>();
