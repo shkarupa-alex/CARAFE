@@ -137,16 +137,14 @@ __global__ void CARAFEForward(
   __syncthreads();
 
   const int channels_per_group = ceilf(channels / (float)group_size);
-#pragma unroll
   for (int c = split_id; c < channels; c += THREADS_PER_PIXEL) {
     int mask_group = c / channels_per_group;
     scalar_t output_val = 0;
-#pragma unroll
     for (int iy = start_h; iy < end_h; iy++) {
-#pragma unroll
       for (int ix = start_w; ix < end_w; ix++) {
         if (iy < 0 || iy > down_height - 1 || ix < 0 || ix > down_width - 1) {
           continue;
+          printf("%d %d %d %d - -\n", n, ph, pw, c);
         }
         int mask_iy = iy - down_ph + (kernel_size - 1) / 2;
         int mask_ix = ix - down_pw + (kernel_size - 1) / 2;
@@ -155,12 +153,14 @@ __global__ void CARAFEForward(
         int feat_index =
             Loc2Index(n, iy, ix, c, down_height, down_width, channels);
 
+        printf("%d %d %d %d %f %f\n", n, ph, pw, c, bottom_data[feat_index], shared_mask[mask_c * WARP_SIZE + pixel_id]);
         output_val += bottom_data[feat_index] *
                       shared_mask[mask_c * WARP_SIZE + pixel_id];
       }
     }
 
     int top_index = Loc2Index(n, ph, pw, c, height, width, channels);
+    printf("%d %d %d %d _ %f\n", n, ph, pw, c, output_val);
     top_data[top_index] = output_val;
   }
 }
